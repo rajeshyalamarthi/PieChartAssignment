@@ -207,55 +207,7 @@ export default class VenueSelectionWebPart extends BaseClientSideWebPart<IVenueS
 
 
 
-        
-      //   var call = $.ajax({
-      //     url: curl + "/_api/web/lists/getByTitle('Managers Speaks')/Items/?$select= Id,ImageUrl,Subject,Description&$filter=(Id eq '"+id+"')",
-      //     type: "GET",
-      //     dataType: "json",
-      //     headers: {
-      //       Accept: "application/json;odata=verbose"
-      //     }
-      //   });
-      //   call.done(function (data) {
-      //    // alert("sucess");
-
-      //     $.each(data.d.results, function (index, value) {
-      //      //alert(value.Subject);
-      //      $("#dispc").empty();
-      //      var message = $("#dispc");
-      //      message.append(`
-      //     <div class="modal-header">
-      //     <button type="button" class="close" data-dismiss="modal">&times;</button>
-      //     <h4 class="modal-title">${value.Subject}</h4>
-      //   </div>
-      //   <div class="modal-body">
-      //   <div>
-      //   <img src='${value.ImageUrl}' alt="Oops Not Displayed" style="width:100%;" />
-      //         <p>${value.Description}</p>
-      //   </div>
-      //   <div>
-      //   <button type="button" class="btn btn-danger" data-dismiss="modal">Close</button>
-
-      //   </div>
-      //   </div>
-           
-           
-      //      `)
-
-
-      //     });
-
-
-
-      //   });
-      //   call.fail(function (jqXHR, textStatus, errorThrown) {
-      //     var response = JSON.parse(jqXHR.responseText);
-      //     var message = response ? response.error.message.value : textStatus;
-      //     alert("Call failed. Error: " + message);
-      //   });
-      // });
-
-
+   
        }
   }
 
