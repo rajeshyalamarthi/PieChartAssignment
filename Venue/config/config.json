@@ -1,0 +1,39 @@
+{
+  "$schema": "https://developer.microsoft.com/json-schemas/spfx-build/config.2.0.schema.json",
+  "version": "2.0",
+  "bundles": {
+    "venue-selection-web-part": {
+      "components": [
+        {
+          "entrypoint": "./lib/webparts/venueSelection/VenueSelectionWebPart.js",
+          "manifest": "./src/webparts/venueSelection/VenueSelectionWebPart.manifest.json"
+        }
+      ]
+    }
+  },
+  "externals": {
+
+    "jquery":{
+
+      "path":"https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js",
+      "globalName": "jquery"
+    },
+  
+    "bootstrap":{
+       "path": "https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js",
+        "globalName": "bootstrap",
+        "globalDependencies": ["jquery"]
+     }
+
+    //  "Chart":{
+
+    //   "path": "https://www.gstatic.com/charts/loader.js",
+    //   "globalName": "Chart",
+    //   "globalDependencies": ["jquery"]
+    //  }
+
+  },
+  "localizedResources": {
+    "VenueSelectionWebPartStrings": "lib/webparts/venueSelection/loc/{locale}.js"
+  }
+}
