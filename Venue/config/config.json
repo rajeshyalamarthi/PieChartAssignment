@@ -25,12 +25,6 @@
         "globalDependencies": ["jquery"]
      }
 
-    //  "Chart":{
-
-    //   "path": "https://www.gstatic.com/charts/loader.js",
-    //   "globalName": "Chart",
-    //   "globalDependencies": ["jquery"]
-    //  }
 
   },
   "localizedResources": {

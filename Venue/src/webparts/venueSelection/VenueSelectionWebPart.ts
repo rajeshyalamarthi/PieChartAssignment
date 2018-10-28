@@ -16,7 +16,7 @@ import { IDigestCache, DigestCache } from '@microsoft/sp-http';
 export interface IVenueSelectionWebPartProps {
   description: string;
 }
-
+var fired_button;
 export default class VenueSelectionWebPart extends BaseClientSideWebPart<IVenueSelectionWebPartProps> {
 
   public render(): void {
@@ -43,6 +43,9 @@ export default class VenueSelectionWebPart extends BaseClientSideWebPart<IVenueS
           </tr>
         </tbody>
       </table>
+      <diV>
+      <button type="button" class="submitvenue" style="background-color: #4CAF50;padding: 15px 32px; text-align: center;text-decoration: none;display: inline-block;font-size: 16px; color: white;">Submit Vote</button>
+      </div>
 
       <div id="piechart"></div>
          
@@ -100,7 +103,7 @@ export default class VenueSelectionWebPart extends BaseClientSideWebPart<IVenueS
 
         $(document).on("click", ".btn" , function(event) {
           
-          var fired_button = $(this).attr("Id");
+          fired_button = $(this).attr("Id");
           alert(fired_button);
           // alert(fired_button);
 
@@ -179,11 +182,10 @@ export default class VenueSelectionWebPart extends BaseClientSideWebPart<IVenueS
       
    
         //pnp.sp.web.lists.getByTitle("VenueLookup").items.add
-        pnp.sp.web.lists.getByTitle('rajeshvoteinfo').items.add({   
+      
 
-          Title :CurrUserName,
-          VenueLookupId :fired_button
-         });
+
+
             
 
 
@@ -192,6 +194,21 @@ export default class VenueSelectionWebPart extends BaseClientSideWebPart<IVenueS
         //  alert("sasa");
         });
 
+
+        
+        $(document).on("click", ".submitvenue" , function(event) {
+          
+          //var fired_button1 = $(this).attr("Id");
+          alert(fired_button);
+
+          pnp.sp.web.lists.getByTitle('rajeshvoteinfo').items.add({   
+
+            Title :CurrUserName,
+            VenueLookupId :fired_button
+           });
+
+          // alert(fired_button);
+        });
 
       //   $(document).on("click", ".btn" , function() 
       // {
