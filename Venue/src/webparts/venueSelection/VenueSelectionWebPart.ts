@@ -10,8 +10,10 @@ require("bootstrap");
 import{SPComponentLoader} from '@microsoft/sp-loader'; 
 import styles from './VenueSelectionWebPart.module.scss';
 import * as strings from 'VenueSelectionWebPartStrings';
-import pnp from "sp-pnp-js";
+import pnp, { Items } from "sp-pnp-js";
 import Chart from 'chart.js';
+import {GoogleCharts} from 'google-charts';
+
 import { IDigestCache, DigestCache, ISPHttpClientOptions, SPHttpClient, SPHttpClientResponse } from '@microsoft/sp-http';
 import { CurrentUser } from 'sp-pnp-js/lib/sharepoint/siteusers';
 
@@ -19,6 +21,10 @@ export interface IVenueSelectionWebPartProps {
   description: string;
 }
 var fired_button;
+var loacationvotelist=new Array();
+var locationlist=new Array();
+var locationname=new Array();
+
 export default class VenueSelectionWebPart extends BaseClientSideWebPart<IVenueSelectionWebPartProps> {
 
   public render(): void {
@@ -51,87 +57,111 @@ export default class VenueSelectionWebPart extends BaseClientSideWebPart<IVenueS
       <button type="button" class="submitvenue" style="background-color: #4CAF50;padding: 15px 32px; text-align: center;text-decoration: none;display: inline-block;font-size: 16px; color: white;">Submit Vote</button>
       </div>
 
-      <div id="piechart"></div>
+     <h2> <div id="chart1"></div></h2>
        <canvas id="doughnut-chart" width="800" height="450"></canvas>
       </div>
       </div>`;
-   $(document).ready(function(){
-  //  alert("no of items entered");
+this.GetVenue(this.GetPieChart,);
+this.GetPieChart();   
 
-  //     //  var location;
-  //      // var CurrUserName=  this.context.pageContext.user.email;
-  //       //alert("currentuser"+CurrUserName);
-  //       var curl = this.context.pageContext.web.absoluteUrl;
-  //       //var context=this.context;
-  //       let html: string = '';
-  //       if (Environment.type === EnvironmentType.Local) {
-  //         this.domElement.querySelector('#test').innerHTML = "sorry this does not work in local workbench";
-  //       }
-    
-  //       else {
-
-  //         var call = $.ajax({
-  //           //?$top=1$select=ID,Title&$filter=(Expires ge datetime'" + d + "')&$orderby=Expires desc"
-  //           url: curl + "/_api/web/lists/getByTitle('rajeshvoteinfo1')/Items",
-  //           type: "GET",
-  //           dataType: "json",
-  //           headers: {
-  //             Accept: "application/json;odata=verbose"
-  //           }
-  //         });
-  //         call.done(function (data,textStatus,jqXHR) {
-       
-  //           var itemscount=data.d.results.length;
-  //           alert(itemscount);
-  //           //  var venuedata = $("#VD");
-  //           //  var trclass=$(".success");
-  //            // var Active;
-          
-  //            $.each(data.d.results, function (index,value) {
-  //            //  alert(value.title);
-  //            alert();  
-    
-          
-  //           }); 
-    
-  //           });
-    
-  //         call.fail(function (jqXHR, textStatus, errorThrown) {
-  //           var response = JSON.parse(jqXHR.responseText);
-  //           var message = response ? response.error.message.value : textStatus;
-  //           alert("Call failed. Error: " + message);
-  //         });
-    
-        new Chart(document.getElementById("doughnut-chart"), {
-          type: 'doughnut',
-          data: {
-            labels: ["Vizag", "Goa", "Banglore", "Vijayawada", "Hyderabad"],
-            datasets: [
-              {
-                label: "Votes(submitted)",
-                backgroundColor: ["#37474F", "#9933CC","#212121","#00695c","#CC0000"],
-                data: [1,1,1,1,1]
-              }
-            ]
-          },
-          options: {
-            title: {
-              display: true,
-              text: 'Votes submitted for each Loaction'
-            }
-          }
-      });
-      
-    // }
-       });
-
-
-
-      this.GetVenue();
+//    $(document).ready(function(){
+// alert("Piechartenterd");
+   
+  
+//        });
   }
-  //to display menu
-  private GetVenue() {
-    var location;
+
+
+private GetPieChart(){
+  alert("piechartenterd");
+  alert("form updation");
+var hyderabadcount=0;
+var vizagcount=0;
+var vijayawadacount=0;
+var banagalorecount=0;
+var curl1=this.context.pageContext.web.absoluteUrl;
+var goacount=0;
+  var call = $.ajax({
+        //?$top=1$select=ID,Title&$filter=(Expires ge datetime'" + d + "')&$orderby=Expires desc"
+        url: curl1+"/_api/web/lists/getByTitle('rajeshvoteinfo1')/Items?$select=Title,VenueLocation",
+        type: "GET",
+        dataType: "json",
+        headers: {
+         Accept: "application/json;odata=verbose"
+        }
+      });
+      call.done(function (data,textStatus,jqXHR) {
+        alert("how long "+locationlist.length);
+        for(var i=0;i<locationlist.length;i++)
+        {
+          var countttt= data.d.results.filter(value => value.VenueLocation === locationlist[i].Title).length;
+          alert("countttt "+countttt)
+          loacationvotelist.push(data.d.results.filter(value => value.VenueLocation === locationlist[i].Title).length);
+        }
+
+  //  $.each(data.d.results, function (index,value) {
+  //   if(value.VenueLocation==locationlist[0]){
+  //   vizagcount++;
+  //   }
+  //    if(value.VenueLocation==locationlist[1]){
+  //     goacount++;
+  //         }
+  //     if(value.VenueLocation==locationlist[2]){
+  //     banagalorecount++;
+  //         }
+  //      if(value.VenueLocation==locationlist[3]){
+  //     vijayawadacount++;
+  //         }
+  //         if(value.VenueLocation==locationlist[4]){
+  //     hyderabadcount++
+  //         }
+  //      }); 
+        // alert(vizagcount);
+        // alert(goacount);
+        // alert(banagalorecount);
+        // alert(vijayawadacount);
+        // alert(hyderabadcount);
+        // loacationvotelist.push(vizagcount);
+        // loacationvotelist.push(goacount);
+        // loacationvotelist.push(banagalorecount);
+        // loacationvotelist.push(vijayawadacount);
+        // loacationvotelist.push(hyderabadcount);
+
+        piechartdisp();
+    
+        });
+  call.fail(function (jqXHR, textStatus, errorThrown) {
+        var response = JSON.parse(jqXHR.responseText);
+        var message = response ? response.error.message.value : textStatus;
+        alert("Call failed. Error: " + message);
+      });
+
+    function piechartdisp(){
+      alert("piechartrefreshd");
+    new Chart(document.getElementById("doughnut-chart"), {
+      type: 'doughnut',
+      data: {
+        labels: locationname,
+        datasets: [
+          {
+            data: loacationvotelist,
+            backgroundColor: ["#37474F", "#9933CC","#212121","#00695c","#CC0000"] 
+          }
+        ]
+      },
+      options: {
+        title: {
+          display: true,
+          text: 'Votes submitted for each Loaction'
+        }
+      }
+  });
+}
+}
+//private GetVenue():any
+  private GetVenue(piechartpassing){
+   var location;
+    var items=[];
     var CurrUserName=  this.context.pageContext.user.email;
     alert("currentuser"+CurrUserName);
     var curl = this.context.pageContext.web.absoluteUrl;
@@ -156,12 +186,17 @@ export default class VenueSelectionWebPart extends BaseClientSideWebPart<IVenueS
          var venuedata = $("#VD");
          var trclass=$(".success");
          // var Active;
-      
+         locationlist = data.d.results;
          $.each(data.d.results, function (index,value) {
          //  alert(value.title);
          venuedata.append("<tr class='"+trclass+"'><td bgcolor='#3F729B'> <h3>"+value.Title+" </td><td><button id= "+value.Title+ " type='button' class='btn btn-primary active' data-toggle='modal' data-target='#myModal'>Vote</button></td><br/></tr>");  
-
+       locationname.push(value.Title);
+      //  alert(locationlist);
+           
+         
         }); 
+        // alert(items);
+        // return items;
         });
 
       call.fail(function (jqXHR, textStatus, errorThrown) {
@@ -169,7 +204,6 @@ export default class VenueSelectionWebPart extends BaseClientSideWebPart<IVenueS
         var message = response ? response.error.message.value : textStatus;
         alert("Call failed. Error: " + message);
       });
-
 //-------------------------------------user validation----------------------
 var call = $.ajax({
  //?$top=1$select=ID,Title&$filter=(Expires ge datetime'" + d + "')&$orderby=Expires desc"
@@ -182,87 +216,55 @@ var call = $.ajax({
 });
 call.done(function (data,textStatus,jqXHR) {
   alert("for filtering entered");
-
-  //  var venuedata = $("#VD");
-  //  var trclass=$(".success");
-   // var Active;
   var test:boolean=true;
    $.each(data.d.results, function (index,value) {
     var label1 = $('#warningmessage1');
     var label2=$('warningmessage')
-   
    alert(value.Title);
    alert(value.ID);
    alert(value.VenueLocation)
    if(CurrUserName===value.Title){
-     
-    
      $(".btn").removeClass('active').addClass('disabled');
      //   // alert(button);
      $('#'+value.VenueLocation).removeAttr('class');
      $('#'+value.VenueLocation).addClass('active btn btn-primary');
-
-     label2.text("You already Voted For "+value.VenueLocation);
+    label2.text("You already Voted For "+value.VenueLocation);
    //  $(document).on("click",  $('#'+value.VenueLocation) , function(event){
-
-      $(document).on("click", ".submitvenue" , function(event) {
-
+$(document).on("click", ".submitvenue" , function(event) {
 alert("update");
 alert("submit");
-pnp.sp.web.lists.getByTitle('rajeshvoteinfo1').items.getById(value.ID).update({   
-    
+pnp.sp.web.lists.getByTitle('rajeshvoteinfo1').items.getById(value.ID).update({       
   Title :CurrUserName,
   VenueLocation :fired_button
 });
-           label.text("vote for "+fired_button+"Updated");
-          alert();
-      
+piechartpassing();
+
+// location.reload();
       //pnp.sp.web.lists.getByTitle("EmployeeList").items.getById(id).update({
-
+        label.text("vote for "+fired_button+"Updated");
+        alert();      
      });
-
-   //  $(".btn").removeClass('active').addClass('disabled');
+    
+//  $(".btn").removeClass('active').addClass('disabled');
       test=false;
-   }
-   
+   } 
    else{
-  //    alert("Please Use The Vote")
-  //    alert("submit the vote")
-        
-  //    $(document).on("click", ".submitvenue" , function(event) {
-
-
-  //     pnp.sp.web.lists.getByTitle('rajeshvoteinfo1').items.add({   
-    
-  //               Title :CurrUserName,
-  //               VenueLocation :fired_button
-  //              });
-    
-  //             alert("vote for "+fired_button+"submitted");
-  //           });
-    
    }
   }); 
 if(test)
    {
      alert("testing sucess");
-     
      alert("Please Use The Vote")
      alert("submit the vote")
      var label = $('#warningmessage');
      $(document).on("click", ".submitvenue" , function(event) {
-
-
       pnp.sp.web.lists.getByTitle('rajeshvoteinfo1').items.add({   
-    
       Title :CurrUserName,
       VenueLocation :fired_button
     });
+    // location.reload();
                label.text("vote for"+fired_button+"submitted");
               alert();
-          
-
-
     });
    }
 
@@ -278,28 +280,20 @@ call.fail(function (jqXHR, textStatus, errorThrown) {
 //--------------------------------------to select the vote-------------------------------------------------------
 
         $(document).on("click", ".btn" , function(event) {
-          
           fired_button = $(this).attr("Id");
           alert(fired_button);
-          // alert(fired_button);
-
-          //  var button = $(event.relatedTarget) ; 
-          //  alert(button);
-         
            $(".btn").removeClass('active').addClass('disabled');
         //   // alert(button);
         $('#'+fired_button).removeAttr('class');
         $('#'+fired_button).addClass('active btn btn-primary');
-
-
-
-
-
 });
+//return items;
     }}
 
+// items count----------------------------------------------
 
-//------------------------------------------------post------------------------------------------
+//=================================================================================
+//------------------------------------------------post[Tried]------------------------------------------
 
        
           // var call = jQuery.ajax({
@@ -366,7 +360,7 @@ call.fail(function (jqXHR, textStatus, errorThrown) {
         //button.removeClass('disabled').addClass('active'); 
         //  alert("sasa");
       
-   // code for submit vote-------------------------------     
+   // code for submit vote------------------------------- [working]    
         
         // $(document).on("click", ".submitvenue" , function(event) {
         //         alert("Location is : "+fired_button);
