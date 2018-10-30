@@ -124,6 +124,9 @@ var call = $.ajax({
         // loacationvotelist.push(banagalorecount);
         // loacationvotelist.push(vijayawadacount);
         // loacationvotelist.push(hyderabadcount);
+        // setTimeout(() => {
+
+        // }, 200);
         piechartdisplay1();//function for piechart displaying with loaded data
                 });
   call.fail(function (jqXHR, textStatus, errorThrown) {
@@ -137,7 +140,9 @@ public PieChartDisplay(){
 
   //alert(loacationvotelist);
 
-   // alert("Display Pie Chart Entered");
+    alert("Display Pie Chart");
+   
+    
     new Chart(document.getElementById("doughnut-chart"), {
       type: 'doughnut',
       data: {
@@ -156,6 +161,8 @@ public PieChartDisplay(){
         }
       }
   });
+   
+ 
 }
 //private GetVenue() method for Getting all the Location and Votes Details
   private GetVenue(callpiechart,callpiechartdisplay)
