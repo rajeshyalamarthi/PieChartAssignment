@@ -10,12 +10,13 @@ require("bootstrap");
 import{SPComponentLoader} from '@microsoft/sp-loader'; 
 import styles from './VenueSelectionWebPart.module.scss';
 import * as strings from 'VenueSelectionWebPartStrings';
-import pnp, { Items } from "sp-pnp-js";
+import pnp, { Items, AlreadyInBatchException } from "sp-pnp-js";
 import Chart from 'chart.js';
 import {GoogleCharts} from 'google-charts';
 
 import { IDigestCache, DigestCache, ISPHttpClientOptions, SPHttpClient, SPHttpClientResponse } from '@microsoft/sp-http';
 import { CurrentUser } from 'sp-pnp-js/lib/sharepoint/siteusers';
+import { Thread } from 'sp-pnp-js/lib/graph/conversations';
 
 export interface IVenueSelectionWebPartProps {
   description: string;
@@ -24,6 +25,7 @@ var fired_button;
 var loacationvotelist=new Array();
 var locationlist=new Array();
 var locationname=new Array();
+var curl1;
 
 export default class VenueSelectionWebPart extends BaseClientSideWebPart<IVenueSelectionWebPartProps> {
 
@@ -61,28 +63,23 @@ export default class VenueSelectionWebPart extends BaseClientSideWebPart<IVenueS
        <canvas id="doughnut-chart" width="800" height="450"></canvas>
       </div>
       </div>`;
-this.GetVenue(this.GetPieChart,);
-this.GetPieChart();   
-
-//    $(document).ready(function(){
-// alert("Piechartenterd");
-   
-  
-//        });
+       curl1=this.context.pageContext.web.absoluteUrl;
+this.GetVenue(this.GetPieChart,this.PieChartDisplay);
+this.GetPieChart(this.PieChartDisplay);   
   }
+  // method for pie chart------------------------------------------------------------------------
+private GetPieChart(piechartdisplay1){
+//alert("Get Pie Chart Enterd");
 
-
-private GetPieChart(){
-  alert("piechartenterd");
-  alert("form updation");
-var hyderabadcount=0;
-var vizagcount=0;
-var vijayawadacount=0;
-var banagalorecount=0;
-var curl1=this.context.pageContext.web.absoluteUrl;
-var goacount=0;
-  var call = $.ajax({
-        //?$top=1$select=ID,Title&$filter=(Expires ge datetime'" + d + "')&$orderby=Expires desc"
+//************used before(its working)-----------------------------****//
+// alert("piechartenterd");
+// alert("form updation");
+// var hyderabadcount=0;
+// var vizagcount=0;
+// var vijayawadacount=0;
+// var banagalorecount=0;
+//var goacount=0;
+var call = $.ajax({
         url: curl1+"/_api/web/lists/getByTitle('rajeshvoteinfo1')/Items?$select=Title,VenueLocation",
         type: "GET",
         dataType: "json",
@@ -91,12 +88,13 @@ var goacount=0;
         }
       });
       call.done(function (data,textStatus,jqXHR) {
-        alert("how long "+locationlist.length);
+       // alert("how long "+locationlist.length);
+       loacationvotelist.length=0;
         for(var i=0;i<locationlist.length;i++)
         {
           var countttt= data.d.results.filter(value => value.VenueLocation === locationlist[i].Title).length;
-          alert("countttt "+countttt)
-          loacationvotelist.push(data.d.results.filter(value => value.VenueLocation === locationlist[i].Title).length);
+         // alert("countttt "+countttt)
+         loacationvotelist  .push(data.d.results.filter(value => value.VenueLocation === locationlist[i].Title).length);
         }
 
   //  $.each(data.d.results, function (index,value) {
@@ -126,18 +124,20 @@ var goacount=0;
         // loacationvotelist.push(banagalorecount);
         // loacationvotelist.push(vijayawadacount);
         // loacationvotelist.push(hyderabadcount);
-
-        piechartdisp();
-    
-        });
+        piechartdisplay1();//function for piechart displaying with loaded data
+                });
   call.fail(function (jqXHR, textStatus, errorThrown) {
         var response = JSON.parse(jqXHR.responseText);
         var message = response ? response.error.message.value : textStatus;
         alert("Call failed. Error: " + message);
       });
+}
 
-    function piechartdisp(){
-      alert("piechartrefreshd");
+public PieChartDisplay(){
+
+  //alert(loacationvotelist);
+
+   // alert("Display Pie Chart Entered");
     new Chart(document.getElementById("doughnut-chart"), {
       type: 'doughnut',
       data: {
@@ -157,21 +157,19 @@ var goacount=0;
       }
   });
 }
-}
-//private GetVenue():any
-  private GetVenue(piechartpassing){
-   var location;
-    var items=[];
+//private GetVenue() method for Getting all the Location and Votes Details
+  private GetVenue(callpiechart,callpiechartdisplay)
+  {
+   // alert("Get Venue Enterd")
     var CurrUserName=  this.context.pageContext.user.email;
-    alert("currentuser"+CurrUserName);
+    //alert("currentuser"+CurrUserName);
     var curl = this.context.pageContext.web.absoluteUrl;
     var context=this.context;
     let html: string = '';
     if (Environment.type === EnvironmentType.Local) {
       this.domElement.querySelector('#test').innerHTML = "sorry this does not work in local workbench";
     }
-
-    else {
+   else {
       var call = $.ajax({
         //?$top=1$select=ID,Title&$filter=(Expires ge datetime'" + d + "')&$orderby=Expires desc"
         url: curl + "/_api/web/lists/getByTitle('rajeshvenueinfo')/Items/?$select= Id,Title",
@@ -182,7 +180,7 @@ var goacount=0;
         }
       });
       call.done(function (data,textStatus,jqXHR) {
-   
+   //alert("Display locaton data and Buttons");
          var venuedata = $("#VD");
          var trclass=$(".success");
          // var Active;
@@ -191,12 +189,8 @@ var goacount=0;
          //  alert(value.title);
          venuedata.append("<tr class='"+trclass+"'><td bgcolor='#3F729B'> <h3>"+value.Title+" </td><td><button id= "+value.Title+ " type='button' class='btn btn-primary active' data-toggle='modal' data-target='#myModal'>Vote</button></td><br/></tr>");  
        locationname.push(value.Title);
-      //  alert(locationlist);
-           
-         
+      // alert(locationname);         
         }); 
-        // alert(items);
-        // return items;
         });
 
       call.fail(function (jqXHR, textStatus, errorThrown) {
@@ -204,9 +198,8 @@ var goacount=0;
         var message = response ? response.error.message.value : textStatus;
         alert("Call failed. Error: " + message);
       });
-//-------------------------------------user validation----------------------
+//-------------------------------------user validation-------------------------------------------
 var call = $.ajax({
- //?$top=1$select=ID,Title&$filter=(Expires ge datetime'" + d + "')&$orderby=Expires desc"
   url: curl + "/_api/web/lists/getByTitle('rajeshvoteinfo1')/Items/?$select= Title,VenueLocation,ID&$filter=(Title eq '"+ CurrUserName+"')",
   type: "GET",
   dataType: "json",
@@ -215,37 +208,39 @@ var call = $.ajax({
   }
 });
 call.done(function (data,textStatus,jqXHR) {
-  alert("for filtering entered");
+  //alert("for user validation entered");
   var test:boolean=true;
    $.each(data.d.results, function (index,value) {
     var label1 = $('#warningmessage1');
     var label2=$('warningmessage')
-   alert(value.Title);
-   alert(value.ID);
-   alert(value.VenueLocation)
+  //  alert(value.Title);
+  //  alert(value.ID);
+  //  alert(value.VenueLocation)
    if(CurrUserName===value.Title){
-     $(".btn").removeClass('active').addClass('disabled');
-     //   // alert(button);
-     $('#'+value.VenueLocation).removeAttr('class');
-     $('#'+value.VenueLocation).addClass('active btn btn-primary');
-    label2.text("You already Voted For "+value.VenueLocation);
-   //  $(document).on("click",  $('#'+value.VenueLocation) , function(event){
+    // alert("User existed")
+setTimeout(() => {
+ $(".btn").removeClass('active').addClass('disabled');
+      //   // alert(button);
+$('#'+value.VenueLocation).removeAttr('class');
+$('#'+value.VenueLocation).addClass('active btn btn-primary');
+  label2.text("You already Voted For "+value.VenueLocation);
+    }, 200);
+// submit button to update the vote 
 $(document).on("click", ".submitvenue" , function(event) {
-alert("update");
-alert("submit");
+//alert(" do you want to update");
+//alert("submit");
 pnp.sp.web.lists.getByTitle('rajeshvoteinfo1').items.getById(value.ID).update({       
   Title :CurrUserName,
   VenueLocation :fired_button
+}).then(()=> {
+  // alert("updated");
+  // label1.text("vote for "+fired_button+"Updated");   
+  // setTimeout(() => {
+  //   window.location.reload();
+  // }, 500);
+  callpiechart(callpiechartdisplay)
+  });          
 });
-piechartpassing();
-
-// location.reload();
-      //pnp.sp.web.lists.getByTitle("EmployeeList").items.getById(id).update({
-        label.text("vote for "+fired_button+"Updated");
-        alert();      
-     });
-    
-//  $(".btn").removeClass('active').addClass('disabled');
       test=false;
    } 
    else{
@@ -253,18 +248,20 @@ piechartpassing();
   }); 
 if(test)
    {
-     alert("testing sucess");
-     alert("Please Use The Vote")
-     alert("submit the vote")
+alert("New User Please Enter The Vote");
      var label = $('#warningmessage');
+  //-------------------------Click on submit to add the vote------------------------------
      $(document).on("click", ".submitvenue" , function(event) {
       pnp.sp.web.lists.getByTitle('rajeshvoteinfo1').items.add({   
       Title :CurrUserName,
       VenueLocation :fired_button
+    }).then(()=> {
+  
+      callpiechart(callpiechartdisplay)
+      window.location.reload();
+      
     });
-    // location.reload();
-               label.text("vote for"+fired_button+"submitted");
-              alert();
+
     });
    }
 
@@ -277,26 +274,20 @@ call.fail(function (jqXHR, textStatus, errorThrown) {
 });
 
 
-//--------------------------------------to select the vote-------------------------------------------------------
+//------------  vote button functionality-------------------------------------------------------
 
-        $(document).on("click", ".btn" , function(event) {
-          fired_button = $(this).attr("Id");
-          alert(fired_button);
-           $(".btn").removeClass('active').addClass('disabled');
+  $(document).on("click", ".btn" , function(event) {
+         // alert("first Button entered");
+   fired_button = $(this).attr("Id");
+         // alert(fired_button);
+   $(".btn").removeClass('active').addClass('disabled');
         //   // alert(button);
-        $('#'+fired_button).removeAttr('class');
-        $('#'+fired_button).addClass('active btn btn-primary');
+   $('#'+fired_button).removeAttr('class');
+  $('#'+fired_button).addClass('active btn btn-primary');
 });
-//return items;
     }}
-
-// items count----------------------------------------------
-
-//=================================================================================
-//------------------------------------------------post[Tried]------------------------------------------
-
-       
-          // var call = jQuery.ajax({
+//------------------------------------------------Topost[Tried]------------------------------------------
+      // var call = jQuery.ajax({
           //     url: curl + "/_api/Web/?$select=Title,CurrentUser/Id&$expand=CurrentUser/Id",
           //     type: "GET",
           //     dataType: "json",
